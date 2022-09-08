@@ -17,8 +17,8 @@ class MoviesController < ApplicationController
       @ratings_to_show = session[:ratings_to_show]
       @selected_ratings = session[:ratings_to_show]
     else
-        @ratings_to_show = @all_ratings
-        @selected_ratings = @all_ratings
+        @ratings_to_show = {"G"=>"1", "PG"=>"1", "PG-13"=>"1", "NC-17"=>"1", "R"=>"1"}
+        @selected_ratings = @ratings_to_show
     end  
        
     if not params[:sort].nil?
@@ -41,6 +41,8 @@ class MoviesController < ApplicationController
       @movie_title_css = ""
     end
     
+    p @ratings_to_show
+
     if @selected_ratings == nil and @sort == nil
       @movies = Movie.all
     elsif @selected_ratings == nil
@@ -78,10 +80,6 @@ class MoviesController < ApplicationController
     @movie.destroy
     flash[:notice] = "Movie '#{@movie.title}' deleted."
     redirect_to movies_path
-  end
-
-  def sessions
-    session.clear
   end
 
   private
