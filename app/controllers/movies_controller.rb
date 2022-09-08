@@ -19,7 +19,16 @@ class MoviesController < ApplicationController
     
     if not params[:sort].nil?
       @sort = params[:sort]
+      if @sort == "title"
+        @movie_title_css = "hilite bg-warning"
+        @release_date_css = ""
+      elsif @sort == "release_date" 
+        @release_date_css = "hilite bg-warning"
+        @movie_title_css = ""
+      end
     else
+      @release_date_css = ""
+      @movie_title_css = ""
       @sort = ""
     end
     
