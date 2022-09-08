@@ -39,11 +39,14 @@ class MoviesController < ApplicationController
     else
       @release_date_css = ""
       @movie_title_css = ""
-      @sort = ""
     end
     
-    if @selected_ratings == nil
+    if @selected_ratings == nil and @sort == nil
+      @movies = Movie.all
+    elsif @selected_ratings == nil
       @movies = Movie.all.order(@sort)
+    elsif @sort == nil
+      @movies = Movie.where(rating: @selected_ratings.keys)
     else
       @movies = Movie.where(rating: @selected_ratings.keys).order(@sort)
     end
@@ -75,6 +78,10 @@ class MoviesController < ApplicationController
     @movie.destroy
     flash[:notice] = "Movie '#{@movie.title}' deleted."
     redirect_to movies_path
+  end
+
+  def sessions
+    session.clear
   end
 
   private
