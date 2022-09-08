@@ -17,8 +17,8 @@ class MoviesController < ApplicationController
       @ratings_to_show = session[:ratings_to_show]
       @selected_ratings = session[:ratings_to_show]
     else
-        @ratings_to_show = ""
-        @selected_ratings = ""
+        @ratings_to_show = @all_ratings
+        @selected_ratings = @all_ratings
     end  
        
     if not params[:sort].nil?
@@ -40,9 +40,6 @@ class MoviesController < ApplicationController
       @release_date_css = ""
       @movie_title_css = ""
     end
-    
-    p @selected_ratings
-    p @sort
     
     if @selected_ratings == nil and @sort == nil
       @movies = Movie.all
