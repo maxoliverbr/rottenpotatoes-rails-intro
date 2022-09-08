@@ -13,19 +13,29 @@ class MoviesController < ApplicationController
       @ratings_to_show = params[:ratings]
       @selected_ratings = params[:ratings]
       session[:ratings_to_show] = @ratings_to_show
+    elsif not session[:ratings_to_show].nil?
+      @ratings_to_show = session[:ratings_to_show]
+      @selected_ratings = session[:ratings_to_show]
     else
-      @ratings_to_show = ""
-    end
-    
+        @ratings_to_show = ""
+        @selected_ratings = ""
+    end  
+       
     if not params[:sort].nil?
       @sort = params[:sort]
-      if @sort == "title"
+      session[:sort] = @sort
+    elsif not session[:sort].nil?
+        @sort = session[:sort]
+    else
+      @sort = ""
+    end
+
+    if @sort == "title"
         @movie_title_css = "hilite bg-warning"
         @release_date_css = ""
-      elsif @sort == "release_date" 
+    elsif @sort == "release_date" 
         @release_date_css = "hilite bg-warning"
         @movie_title_css = ""
-      end
     else
       @release_date_css = ""
       @movie_title_css = ""
