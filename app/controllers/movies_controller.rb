@@ -41,6 +41,9 @@ class MoviesController < ApplicationController
       @movie_title_css = ""
     end
     
+    p @selected_ratings
+    p @sort
+    
     if @selected_ratings == nil and @sort == nil
       @movies = Movie.all
     elsif @selected_ratings == nil
