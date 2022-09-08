@@ -24,9 +24,9 @@ class MoviesController < ApplicationController
     end
     
     if @selected_ratings == nil
-      @movies = Movie.all
+      @movies = Movie.all.order(@sort)
     else
-      @movies = Movie.where(rating: @selected_ratings.keys)
+      @movies = Movie.where(rating: @selected_ratings.keys).order(@sort)
     end
   end
 
