@@ -8,56 +8,27 @@ class MoviesController < ApplicationController
 
   def index
     
-    
-    if params[:sort].nil? && params[:ratings].nil? &&
-      (!session[:sort].nil? || !session[:ratings].nil?)
-      redirect_to movies_path(:sort => session[:sort], :ratings => session[:ratings])
+    sort = params[:sort] || session[:sort]
+    case sort
+    when 'title'
+      ordering,@title_header = {:title => :asc}, 'hilite'
+    when 'release_date'
+      ordering,@date_header = {:release_date => :asc}, 'hilite'
     end
-
     @all_ratings = Movie.all_ratings
- 
-    if not params[:ratings].nil?
-      @ratings_to_show = params[:ratings]
-      @selected_ratings = params[:ratings]
-      session[:ratings_to_show] = @ratings_to_show
-    elsif not session[:ratings_to_show].nil?
-      @ratings_to_show = session[:ratings_to_show]
-      @selected_ratings = session[:ratings_to_show]
-    else
-        @ratings_to_show = {"G"=>"1", "PG"=>"1", "PG-13"=>"1", "NC-17"=>"1", "R"=>"1"}
-        @selected_ratings = @ratings_to_show
-    end  
-       
-    if not params[:sort].nil?
-      @sort = params[:sort]
-      session[:sort] = @sort
-    elsif not session[:sort].nil?
-        @sort = session[:sort]
-    else
-      @sort = ""
+    @ratings_to_show = params[:ratings] || session[:ratings] || {}
+
+    
+    if @ratings_to_show == {}
+      @ratings_to_show = Hash[@all_ratings.map {|rating| [rating, rating]}]
     end
 
-    if @sort == "title"
-        @movie_title_css = "hilite bg-warning"
-        @release_date_css = ""
-    elsif @sort == "release_date" 
-        @release_date_css = "hilite bg-warning"
-        @movie_title_css = ""
-    else
-      @release_date_css = ""
-      @movie_title_css = ""
+    if params[:sort] != session[:sort] or params[:ratings] != session[:ratings]
+      session[:sort] = sort
+      session[:ratings] = @ratings_to_show
+      redirect_to :sort => sort, :ratings => @ratings_to_show and return
     end
-    
-    
-    if @selected_ratings == nil and @sort == nil
-      @movies = Movie.all
-    elsif @selected_ratings == nil
-      @movies = Movie.all.order(@sort)
-    elsif @sort == nil
-      @movies = Movie.where(rating: @selected_ratings.keys)
-    else
-      @movies = Movie.where(rating: @selected_ratings.keys).order(@sort)
-    end
+    @movies = Movie.where(rating: @ratings_to_show.keys).order(ordering)
   end
 
   def new
