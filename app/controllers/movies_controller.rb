@@ -10,12 +10,13 @@ class MoviesController < ApplicationController
 
     @all_ratings = Movie.all_ratings
 
-    if params[:s] == 'x'
-      session[:ratings] = nil
-      session[:sort] = nil
-    end
-
-    if params[:ratings].nil? and params[:sort].nil?
+    if params[:commit] == 'Refresh' and params[:ratings].nil?
+      p "r1"
+      @ratings_to_show = Hash[ *@all_ratings.collect { |v| [ v, 1 ] }.flatten ]
+      session[:ratings] = @ratings_to_show
+    end 
+    
+    if params[:ratings].nil? and params[:sort].nil? 
       p "t1"
       if not session[:ratings].nil?
         p "t2"
