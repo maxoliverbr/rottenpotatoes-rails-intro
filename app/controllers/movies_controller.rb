@@ -7,7 +7,12 @@ class MoviesController < ApplicationController
   end
 
   def index
+    
     @all_ratings = Movie.all_ratings
+
+    if params[:ratings].nil? and params[:sort].nil?
+      redirect_to movies_path(sort: session[:sort], ratings_to_show: session[:ratings_to_show])
+    end
     
     if not params[:ratings].nil?
       @ratings_to_show = params[:ratings]
@@ -41,8 +46,7 @@ class MoviesController < ApplicationController
       @movie_title_css = ""
     end
     
-    p @ratings_to_show
-
+    
     if @selected_ratings == nil and @sort == nil
       @movies = Movie.all
     elsif @selected_ratings == nil
