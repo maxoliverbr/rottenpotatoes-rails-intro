@@ -51,8 +51,6 @@ class MoviesController < ApplicationController
     @ratings = @ratings_to_show
     
   end
-
-  end
   
   def new
     # default: render 'new' template
