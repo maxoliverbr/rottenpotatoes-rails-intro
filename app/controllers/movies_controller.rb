@@ -11,31 +11,30 @@ class MoviesController < ApplicationController
     @all_ratings = Movie.all_ratings
 
     if params[:commit] == 'Refresh' and params[:ratings].nil?
-      p "r1"
+      #p "r1"
       @ratings_to_show = Hash[ *@all_ratings.collect { |v| [ v, 1 ] }.flatten ]
       session[:ratings] = @ratings_to_show
     end 
     
     if params[:ratings].nil? and params[:sort].nil? 
-      p "t1"
+      #p "t1"
       if not session[:ratings].nil?
-        p "t2"
+        #p "t2"
         @ratings_to_show = session[:ratings]
       else
-        p "t3"
+        #p "t3"
         @ratings_to_show = Hash[ *@all_ratings.collect { |v| [ v, 1 ] }.flatten ]
         session[:ratings] = @ratings_to_show
       end
       redirect_to movies_path(:sort => session[:sort], :ratings => session[:ratings])
     else
-      p "t4"
+      #p "t4"
       if params[:ratings].nil?
         @ratings_to_show = session[:ratings]
       else
         @ratings_to_show = params[:ratings]   
       end
     end
-
     
     @sort = params[:sort] || session[:sort]
     case @sort
@@ -45,13 +44,13 @@ class MoviesController < ApplicationController
       ordering,@release_date_css = {:release_date => :asc}, 'hilite'
     end
     
-    
     @movies = Movie.with_ratings(@ratings_to_show).order(ordering)
     
     session[:sort]    = @sort
     session[:ratings] = @ratings_to_show
     @rating = @ratings_to_show
 
+    
   end
 
   def new
