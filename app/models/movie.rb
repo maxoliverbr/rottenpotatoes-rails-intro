@@ -1,6 +1,5 @@
 class Movie < ActiveRecord::Base
   
-  
   def self.ratings
     pluck(:rating).uniq
   end
@@ -14,12 +13,10 @@ class Movie < ActiveRecord::Base
   end
 
   def self.with_ratings(rating)
-    r = rating.keys
-    
-    if rating == nil
+    if rating.nil?
       return self.where(rating: self.all_ratings)
     else
-      return self.where(rating: r.map!(&:upcase))
+      return self.where(rating: rating.keys.map!(&:upcase))
     end
   end
 end

@@ -9,47 +9,62 @@ class MoviesController < ApplicationController
   def index
 
     @all_ratings = Movie.all_ratings
+    @sort = nil
+    @ratings_to_show = nil
 
-    if params[:commit] == 'Refresh' and params[:ratings].nil?
-      #p "r1"
+    if params[:s] == "x"
+      session.clear
+      @ratings_to_show = Hash[ *@all_ratings.collect { |v| [ v, 1 ] }.flatten ]
+    end
+
+    p "-------------------------"
+    if params[:sort].nil? and params[:ratings].nil? and 
+        (session[:sort].nil? and session[:ratings].nil?)   
+      p "zero"  
       @ratings_to_show = Hash[ *@all_ratings.collect { |v| [ v, 1 ] }.flatten ]
       session[:ratings] = @ratings_to_show
-    end 
-    
-    if params[:ratings].nil? and params[:sort].nil? 
-      #p "t1"
-      if not session[:ratings].nil?
-        #p "t2"
-        @ratings_to_show = session[:ratings]
-      else
-        #p "t3"
-        @ratings_to_show = Hash[ *@all_ratings.collect { |v| [ v, 1 ] }.flatten ]
-        session[:ratings] = @ratings_to_show
-      end
-      redirect_to movies_path(:sort => session[:sort], :ratings => session[:ratings])
-    else
-      #p "t4"
-      if params[:ratings].nil?
-        @ratings_to_show = session[:ratings]
-      else
-        @ratings_to_show = params[:ratings]   
-      end
+      redirect_to movies_path(:ratings => session[:ratings])
     end
-    
-    @sort = params[:sort] || session[:sort]
-    case @sort
-    when 'title'
-      ordering,@movie_title_css = {:title => :asc}, 'hilite'
-    when 'release_date'
-      ordering,@release_date_css = {:release_date => :asc}, 'hilite'
-    end
-    
-    @movies = Movie.with_ratings(@ratings_to_show).order(ordering)
-    
-    session[:sort]    = @sort
-    session[:ratings] = @ratings_to_show
-    @rating = @ratings_to_show
 
+    
+    if params[:ratings].nil? and params[:commit] == "Refresh"
+      #p "t2"
+      @ratings_to_show = Hash[ *@all_ratings.collect { |v| [ v, 1 ] }.flatten ]
+      session[:ratings] = @ratings_to_show
+    elsif not params[:ratings].nil? and params[:commit] == "Refresh"
+      #p "t2.1"
+      @ratings_to_show = params[:ratings].transform_keys(&:upcase)
+      session[:ratings] = @ratings_to_show
+    elsif not session[:ratings].nil?
+      #p "t2.2"
+      @ratings_to_show = session[:ratings]        
+    else
+    end
+
+    if not params[:sort].nil?
+      #p "t3"
+      @sort = params[:sort].upcase
+      session[:sort] = @sort
+    elsif not session[:sort].nil?
+            #p "t3.3"
+            @sort = session[:sort]
+    else
+    end
+    
+    if @sort.nil?
+        p "s1"
+        @movies = Movie.with_ratings(@ratings_to_show)
+    else
+        p "s2"
+        @sort = params[:sort] || session[:sort]
+        case @sort.upcase
+        when 'TITLE'
+          ordering,@movie_title_css = {:title => :asc}, 'hilite'
+        when 'RELEASE_DATE'
+          ordering,@release_date_css = {:release_date => :asc}, 'hilite'
+        end
+        @movies = Movie.with_ratings(@ratings_to_show).order(ordering)
+    end
     
   end
 
