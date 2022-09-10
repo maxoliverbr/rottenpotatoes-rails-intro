@@ -4,8 +4,10 @@ class Movie < ActiveRecord::Base
     pluck(:rating).uniq
   end
   
-  def self.find_all_by_ratings(ratings)
-    where(rating: ratings)
+  def self.find_all_by_ratings(ratings, ordering)
+    
+    self.where(rating: ratings).order(ordering)
+    
   end
   
   def self.all_ratings
