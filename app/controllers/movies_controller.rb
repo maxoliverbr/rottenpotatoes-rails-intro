@@ -8,34 +8,50 @@ class MoviesController < ApplicationController
 
   def index
 
-      sort = params[:sort] || session[:sort]
-      case sort
-      when 'title'
-        ordering,@movie_title_css = {:title => :asc}, 'hilite'
-      when 'release_date'
-        ordering,@release_date_css = {:release_date => :asc}, 'hilite'
-      end
-      @all_ratings = Movie.all_ratings
-      @ratings_to_show = params[:ratings] || session[:ratings] || {}
-  
-      if @ratings_to_show == {}
-        @ratings_to_show = Hash[@all_ratings.map {|rating| [rating, rating]}]
-      end
-      
-      if params[:sort] != session[:sort]
-        session[:sort] = sort
-        flash.keep
-        redirect_to :sort => sort, :ratings => @ratings_to_show and return
-      end
-  
-      if params[:ratings] != session[:ratings] and @ratings_to_show != {}
-        session[:sort] = sort
+    @all_ratings = Movie.all_ratings
+
+    if params[:commit] == 'Refresh' and params[:ratings].nil?
+      #p "r1"
+      @ratings_to_show = Hash[ *@all_ratings.collect { |v| [ v, 1 ] }.flatten ]
+      session[:ratings] = @ratings_to_show
+    end 
+    
+    if params[:ratings].nil? and params[:sort].nil? 
+      #p "t1"
+      if not session[:ratings].nil?
+        #p "t2"
+        @ratings_to_show = session[:ratings]
+      else
+        #p "t3"
+        @ratings_to_show = Hash[ *@all_ratings.collect { |v| [ v, 1 ] }.flatten ]
         session[:ratings] = @ratings_to_show
-        flash.keep
-        redirect_to :sort => sort, :ratings => @ratings_to_show and return
       end
-      
-      @movies = Movie.with_ratings(@ratings_to_show).order(ordering)
+      redirect_to movies_path(:sort => session[:sort], :ratings => session[:ratings])
+    else
+      #p "t4"
+      if params[:ratings].nil?
+        @ratings_to_show = session[:ratings]
+      else
+        @ratings_to_show = params[:ratings]   
+      end
+    end
+    
+    @sort = params[:sort] || session[:sort]
+    case @sort
+    when 'title'
+      ordering,@movie_title_css = {:title => :asc}, 'hilite'
+    when 'release_date'
+      ordering,@release_date_css = {:release_date => :asc}, 'hilite'
+    end
+    
+    @movies = Movie.with_ratings(@ratings_to_show).order(ordering)
+    
+    session[:sort]    = @sort
+    session[:ratings] = @ratings_to_show
+    @ratings = @ratings_to_show
+    
+  end
+
   end
   
   def new
