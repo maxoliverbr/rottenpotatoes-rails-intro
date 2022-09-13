@@ -9,7 +9,6 @@ class MoviesController < ApplicationController
   def index
 
     @all_ratings = Movie.all_ratings
-    
 
     if params[:commit] == 'Refresh' and params[:ratings].nil?
       #p "r1" 
