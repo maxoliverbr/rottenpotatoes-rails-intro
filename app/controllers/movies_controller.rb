@@ -11,7 +11,7 @@ class MoviesController < ApplicationController
     @all_ratings = Movie.all_ratings
 
     if params[:commit] == 'Refresh' and params[:ratings].nil?
-      #p "r1"
+      #p "r1" 
       @ratings_to_show = Hash[ *@all_ratings.collect { |v| [ v, 1 ] }.flatten ]
       session[:ratings] = @ratings_to_show
     end 
