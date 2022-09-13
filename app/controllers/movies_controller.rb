@@ -9,7 +9,12 @@ class MoviesController < ApplicationController
   def index
 
     @all_ratings = Movie.all_ratings
-
+    if not session[:rating].nil?
+      @rating = session[:rating]
+    else
+      @rating = Hash[ *@all_ratings.collect { |v| [ v, 1 ] }.flatten ]
+    end
+    
     if params[:commit] == 'Refresh' and params[:ratings].nil?
       #p "r1" 
       @ratings_to_show = Hash[ *@all_ratings.collect { |v| [ v, 1 ] }.flatten ]
@@ -45,6 +50,8 @@ class MoviesController < ApplicationController
     end
     
     @movies = Movie.with_ratings(@ratings_to_show).order(ordering)
+    @rating = @ratings_to_show
+    session[:rating] = @ratings_to_show
     
     session[:sort]    = @sort
     session[:ratings] = @ratings_to_show
