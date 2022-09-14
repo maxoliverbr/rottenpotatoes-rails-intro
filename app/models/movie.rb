@@ -18,7 +18,8 @@ class Movie < ActiveRecord::Base
     if rating.nil?
       return self.where(rating: self.all_ratings)
     else
-      return self.where(rating: rating.keys.map!(&:upcase))
+      #return self.where(rating: rating.keys.map!(&:upcase))
+      return self.where(rating: rating)
     end
   end
 end

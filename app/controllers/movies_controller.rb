@@ -9,15 +9,11 @@ class MoviesController < ApplicationController
   def index
 
     @all_ratings = Movie.all_ratings
-    if not session[:rating].nil?
-      @rating = session[:rating]
-    else
-      @rating = Hash[ *@all_ratings.collect { |v| [ v, 1 ] }.flatten ]
-    end
     
     if params[:commit] == 'Refresh' and params[:ratings].nil?
       #p "r1" 
-      @ratings_to_show = Hash[ *@all_ratings.collect { |v| [ v, 1 ] }.flatten ]
+      #@ratings_to_show = Hash[ *@all_ratings.collect { |v| [ v, 1 ] }.flatten ]
+      @ratings_to_show = @all_ratings
       session[:ratings] = @ratings_to_show
     end 
     
@@ -28,18 +24,26 @@ class MoviesController < ApplicationController
         @ratings_to_show = session[:ratings]
       else
         #p "t3"
-        @ratings_to_show = Hash[ *@all_ratings.collect { |v| [ v, 1 ] }.flatten ]
+        #@ratings_to_show = Hash[ *@all_ratings.collect { |v| [ v, 1 ] }.flatten ]
+        @ratings_to_show = @all_ratings
         session[:ratings] = @ratings_to_show
       end
-      redirect_to movies_path(:sort => session[:sort], :ratings => session[:ratings])
+      r = Hash[ *session[:ratings].collect { |v| [ v, 1 ] }.flatten ]
+      redirect_to movies_path(:sort => session[:sort], :ratings => r)
     else
       #p "t4"
       if params[:ratings].nil?
         @ratings_to_show = session[:ratings]
       else
-        @ratings_to_show = params[:ratings]   
+        p params[:ratings]
+        @ratings_to_show = params[:ratings].keys   
       end
     end
+
+    #p params[:ratings] 
+    #p @ratings_to_show
+    #@ratings_to_show = @ratings_to_show.keys
+
     
     @sort = params[:sort] || session[:sort]
     case @sort
@@ -51,8 +55,7 @@ class MoviesController < ApplicationController
     
     @movies = Movie.with_ratings(@ratings_to_show).order(ordering)
     @rating = @ratings_to_show
-    session[:rating] = @ratings_to_show
-    
+        
     session[:sort]    = @sort
     session[:ratings] = @ratings_to_show
     @ratings = @ratings_to_show
