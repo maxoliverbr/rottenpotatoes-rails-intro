@@ -17,19 +17,19 @@ class MoviesController < ApplicationController
     end 
     
     if params[:ratings].nil? and params[:sort].nil? 
-      #p "t1"
+      p "t1"
       if not session[:ratings].nil?
-        #p "t2"
+        p "t2"
         @ratings_to_show = session[:ratings]
       else
-        #p "t3"
+        p "t3"
         @ratings_to_show = @all_ratings
         session[:ratings] = @ratings_to_show
       end
       r = Hash[ *session[:ratings].collect { |v| [ v, 1 ] }.flatten ]
       redirect_to movies_path(:sort => session[:sort], :ratings => r)
     else
-      #p "t4"
+      p "t4"
       if params[:ratings].nil?
         @ratings_to_show = session[:ratings]
       else
